@@ -9,6 +9,8 @@ android {
     namespace = "com.example.flutter_rust_example"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
+    // NDK version that works with flutter_rust_bridge
+    // ndkVersion "25.1.8937393"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -28,6 +30,10 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+
+        ndk {
+            abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86", "x86_64")
+        }
     }
 
     buildTypes {
@@ -37,6 +43,22 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
     }
+
+    // Add the following block to include native libraries
+    sourceSets {
+        getByName("main") {
+            jniLibs.srcDirs("src/main/jniLibs")
+        }
+    }
+
+    // Required to support native code
+    externalNativeBuild {
+        // If you need CMake support, uncomment the following
+        // cmake {
+        //     path = file("CMakeLists.txt")
+        // }
+    }
+    
 }
 
 flutter {
