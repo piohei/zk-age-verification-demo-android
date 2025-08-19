@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:path_provider/path_provider.dart' show getApplicationDocumentsDirectory, getTemporaryDirectory;
 import 'bridge_generated/api.dart';  // Updated import path
 import 'bridge_generated/frb_generated.dart';  // Updated import path
 import 'dart:ffi';
@@ -53,28 +55,84 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String _message = "Press the button to call Rust code";
-  bool _isLoading = false;
+  String _message = "R1CS Android Runner";
+  bool _isLoadingPrepare = false;
+  bool _isLoadingProve = false;
 
-  Future<void> _callRustCode() async {
+  Future<void> _callRustPrepare() async {
     setState(() {
-      _isLoading = true;
+      _isLoadingPrepare = true;
     });
     
     try {
+      final directory = await getApplicationDocumentsDirectory();
+      final programPath = await _getAssetPath('assets/complete_age_check.json');
+      final outputPath = '${directory.path}/prepare-output-noir-proof-scheme.nps';
+
       // Call the Rust function
-      final result = await helloWorld();
+      final result = await prepare(programPath: programPath, outputPath: outputPath);
       
       setState(() {
         _message = result;
-        _isLoading = false;
+        _isLoadingPrepare = false;
       });
     } catch (e) {
       setState(() {
         _message = "Error: $e";
-        _isLoading = false;
+        _isLoadingPrepare = false;
       });
     }
+  }
+
+  Future<void> _callRustProve() async {
+    setState(() {
+      _isLoadingProve = true;
+    });
+
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      final schemePath = '${directory.path}/prepare-output-noir-proof-scheme.nps';
+      final inputPath = await _getAssetPath('assets/Prover.toml');
+      final proofPath = '${directory.path}/prove-output-noir-proof.np';
+
+      // Call the Rust function
+      final result = await prove(schemePath: schemePath, inputPath: inputPath, proofPath: proofPath);
+
+      setState(() {
+        _message = result;
+        _isLoadingProve = false;
+      });
+    } catch (e) {
+      setState(() {
+        _message = "Error: $e";
+        _isLoadingProve = false;
+      });
+    }
+  }
+
+
+  // Helper function to get an asset as a file with a real path
+  Future<String> _getAssetPath(String assetPath) async {
+    // Get temporary directory
+    final directory = await getTemporaryDirectory();
+
+    // Extract filename from asset path
+    final filename = assetPath.split('/').last;
+    final filePath = '${directory.path}/$filename';
+
+    // Load asset
+    final byteData = await rootBundle.load(assetPath);
+
+    // Write to file
+    final file = File(filePath);
+    await file.writeAsBytes(
+        byteData.buffer.asUint8List(
+          byteData.offsetInBytes,
+          byteData.lengthInBytes,
+        )
+    );
+
+    return filePath;
   }
 
   @override
@@ -103,10 +161,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
               const SizedBox(height: 30),
-              _isLoading
+              _isLoadingPrepare
                   ? const CircularProgressIndicator()
                   : ElevatedButton(
-                      onPressed: _callRustCode,
+                      onPressed: _callRustPrepare,
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 24,
@@ -114,7 +172,23 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                       ),
                       child: const Text(
-                        'Call Rust Function',
+                        'Prepare',
+                        style: TextStyle(fontSize: 18),
+                      ),
+                    ),
+              const SizedBox(height: 30),
+              _isLoadingProve
+                  ? const CircularProgressIndicator()
+                  : ElevatedButton(
+                      onPressed: _callRustProve,
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
+                      ),
+                      child: const Text(
+                        'Prove',
                         style: TextStyle(fontSize: 18),
                       ),
                     ),
