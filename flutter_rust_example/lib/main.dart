@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:path_provider/path_provider.dart' show getApplicationDocumentsDirectory, getTemporaryDirectory;
+import 'package:path_provider/path_provider.dart' show getApplicationDocumentsDirectory, getTemporaryDirectory, getApplicationCacheDirectory;
 import 'bridge_generated/api.dart';  // Updated import path
 import 'bridge_generated/frb_generated.dart';  // Updated import path
 import 'dart:ffi';
@@ -63,15 +63,16 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _isLoadingPrepare = true;
     });
-    
+
     try {
       final directory = await getApplicationDocumentsDirectory();
       final programPath = await _getAssetPath('assets/complete_age_check.json');
       final outputPath = '${directory.path}/prepare-output-noir-proof-scheme.nps';
+      final tmpDirPath = await getApplicationCacheDirectory();
 
       // Call the Rust function
-      final result = await prepare(programPath: programPath, outputPath: outputPath);
-      
+      final result = await prepare(programPath: programPath, outputPath: outputPath, tmpDirPath: tmpDirPath.path);
+
       setState(() {
         _message = result;
         _isLoadingPrepare = false;

@@ -10,8 +10,12 @@ crate-type = ["staticlib", "cdylib"]
 [dependencies]
 # Required for flutter_rust_bridge integration
 flutter_rust_bridge = "=2.11.1"
-noir-r1cs = { path="../../../spartan/ProveKit/noir-r1cs" }
-#noir-r1cs = { path="../../../spartan/memory-playing/ProveKit/noir-r1cs" }
+#noir-r1cs = { path="../../../spartan/ProveKit/noir-r1cs" }
+noir-r1cs = { path="../../../spartan/memory-playing/ProveKit/noir-r1cs" }
+log = "0.4.27"
+#memmap = "0.7.0"
+memmap2 = "0.9.7"
+tempfile = "3.21.0"
 
 # Add any other Rust dependencies here
 # For example:
