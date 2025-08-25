@@ -54,7 +54,7 @@ pub fn prove(
         .file("config", &gnark_inputs_path)?;
     let client = blocking::Client::new();
     let resp = client
-        .post("http://34.55.192.39/api/v1/verifybasic2")
+        .post("http://34.55.192.39/api/v1/verifyagecheck")
         .multipart(form)
         .send()?;
 
