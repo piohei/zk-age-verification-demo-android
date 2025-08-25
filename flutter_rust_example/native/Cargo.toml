@@ -12,12 +12,6 @@ crate-type = ["staticlib", "cdylib"]
 flutter_rust_bridge = "=2.11.1"
 #noir-r1cs = { path="../../../spartan/ProveKit/noir-r1cs" }
 noir-r1cs = { path="../../../spartan/memory-playing/ProveKit/noir-r1cs" }
-log = "0.4.27"
-#memmap = "0.7.0"
 memmap2 = "0.9.7"
 tempfile = "3.21.0"
-
-# Add any other Rust dependencies here
-# For example:
-# serde = { version = "1.0", features = ["derive"] }
-# tokio = { version = "1.28", features = ["full"] }
+reqwest = { version = "0.12.23", default-features = false, features = ["blocking", "multipart"] }

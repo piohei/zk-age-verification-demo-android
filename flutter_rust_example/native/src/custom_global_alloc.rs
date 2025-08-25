@@ -4,10 +4,8 @@ use std::{
 use std::fs::File;
 use std::path::PathBuf;
 use std::sync::Mutex;
-use std::time::Duration;
 use memmap2::{MmapMut, MmapOptions};
-use tempfile::{env, tempfile, tempfile_in};
-use log::info;
+use tempfile::tempfile_in;
 
 pub struct MemMap2File {
     file: File,
@@ -21,10 +19,7 @@ impl MemMap2File {
 
         let mmap = unsafe {
             MmapOptions::new()
-                // .len(size)
-                // .map_mut(&file)
-                .map_copy(&file)
-                // .map_raw(&file)
+                .map_mut(&file)
                 .expect("mmap mut created")
         };
 
@@ -32,22 +27,6 @@ impl MemMap2File {
             file,
             mmap,
         }
-    }
-
-    pub fn flush(&mut self) -> std::io::Result<()> {
-        self.mmap.flush()?;
-
-        let mmap = unsafe {
-            MmapOptions::new()
-                // .map_mut(&file)
-                .map_copy(&self.file)
-                // .map_raw(&file)
-                .expect("mmap mut created")
-        };
-
-        self.mmap = mmap;
-
-        Ok(())
     }
 }
 
@@ -72,22 +51,18 @@ impl CustomGlobalAllocator {
     }
 }
 
-const SIZE_16MB: usize = 16 * 1024 * 1024;
+const SIZE_4MB: usize = 4 * 1024 * 1024;
 
 #[allow(unsafe_code)]
 unsafe impl GlobalAlloc for CustomGlobalAllocator {
     unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
-        if layout.size() > SIZE_16MB {
-            info!("[zzz] Allocating using mmap (v2)");
+        if layout.size() > SIZE_4MB {
             let mut allocations = self.allocations.lock().unwrap();
             let tmp_dir_path = self.tmp_dir_path.lock().unwrap().last().unwrap().clone();
 
-            info!("[zzz] Allocating using mmap (v2) - create mmap - #1");
             let mut map = MemMap2File::new(tmp_dir_path, layout.size());
             let ptr = map.mmap.as_mut_ptr();
             allocations.push(map);
-
-            info!("[zzz] Allocating using mmap (v2) - create mmap - #2");
 
             ptr
         } else {
@@ -96,7 +71,7 @@ unsafe impl GlobalAlloc for CustomGlobalAllocator {
     }
 
     unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
-        if layout.size() > SIZE_16MB {
+        if layout.size() > SIZE_4MB {
             let mut allocations = self.allocations.lock().unwrap();
 
             for (pos, map) in allocations.iter().enumerate() {

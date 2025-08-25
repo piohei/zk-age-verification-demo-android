@@ -14,7 +14,7 @@ mod custom_global_alloc;
 
 // We can also define utility functions or other modules here if needed
 // mod utils;
-// #[global_allocator]
+#[global_allocator]
 static ALLOC: CustomGlobalAllocator =
     CustomGlobalAllocator::new(
             System
