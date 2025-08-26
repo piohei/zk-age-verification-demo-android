@@ -7,7 +7,7 @@ use flutter_rust_bridge::for_generated::anyhow;
 use flutter_rust_bridge::for_generated::anyhow::Context;
 use anyhow::Result;
 use flutter_rust_bridge::frb;
-use noir_r1cs::{create_io_pattern, read, write, write_gnark_parameters_to_file, NoirProof, NoirProofScheme};
+use noir_r1cs::{read, write_gnark_parameters_to_file, NoirProof, NoirProofScheme};
 use reqwest::blocking;
 use crate::ALLOC;
 
@@ -67,12 +67,13 @@ fn generate_gnark_inputs(
     noir_proof_scheme: &NoirProofScheme, noir_proof: &NoirProof, gnark_inputs_path: &PathBuf,
 ) {
     write_gnark_parameters_to_file(
-        &noir_proof_scheme.whir.whir_config,
+        &noir_proof_scheme.whir_for_witness.whir_witness,
+        &noir_proof_scheme.whir_for_witness.whir_for_hiding_spartan,
         &noir_proof.whir_r1cs_proof.transcript,
-        &create_io_pattern(noir_proof_scheme.whir.m_0, &noir_proof_scheme.whir.whir_config),
-        noir_proof.whir_r1cs_proof.whir_query_answer_sums,
-        noir_proof_scheme.whir.m_0,
-        noir_proof_scheme.whir.m,
+        &noir_proof_scheme.whir_for_witness.create_io_pattern(),
+        noir_proof_scheme.whir_for_witness.m_0,
+        noir_proof_scheme.whir_for_witness.m,
+        noir_proof_scheme.whir_for_witness.a_num_terms,
         gnark_inputs_path.to_str().unwrap(),
     );
 }
