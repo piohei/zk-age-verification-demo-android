@@ -82,7 +82,7 @@ abstract class RustLibApi extends BaseApi {
   Future<String> crateApiProve({
     required String schemePath,
     required String inputPath,
-    required String gnarkInputsPath,
+    required String proofPath,
     required String tmpDirPath,
   });
 }
@@ -126,7 +126,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   Future<String> crateApiProve({
     required String schemePath,
     required String inputPath,
-    required String gnarkInputsPath,
+    required String proofPath,
     required String tmpDirPath,
   }) {
     return handler.executeNormal(
@@ -135,7 +135,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_String(schemePath, serializer);
           sse_encode_String(inputPath, serializer);
-          sse_encode_String(gnarkInputsPath, serializer);
+          sse_encode_String(proofPath, serializer);
           sse_encode_String(tmpDirPath, serializer);
           pdeCallFfi(
             generalizedFrbRustBinding,
@@ -149,7 +149,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeErrorData: sse_decode_AnyhowException,
         ),
         constMeta: kCrateApiProveConstMeta,
-        argValues: [schemePath, inputPath, gnarkInputsPath, tmpDirPath],
+        argValues: [schemePath, inputPath, proofPath, tmpDirPath],
         apiImpl: this,
       ),
     );
@@ -157,7 +157,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   TaskConstMeta get kCrateApiProveConstMeta => const TaskConstMeta(
     debugName: "prove",
-    argNames: ["schemePath", "inputPath", "gnarkInputsPath", "tmpDirPath"],
+    argNames: ["schemePath", "inputPath", "proofPath", "tmpDirPath"],
   );
 
   @protected

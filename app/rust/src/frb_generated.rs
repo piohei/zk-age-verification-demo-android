@@ -103,7 +103,7 @@ fn wire__crate__api__prove_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_scheme_path = <String>::sse_decode(&mut deserializer);
             let api_input_path = <String>::sse_decode(&mut deserializer);
-            let api_gnark_inputs_path = <String>::sse_decode(&mut deserializer);
+            let api_proof_path = <String>::sse_decode(&mut deserializer);
             let api_tmp_dir_path = <String>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| {
@@ -112,7 +112,7 @@ fn wire__crate__api__prove_impl(
                         let output_ok = crate::api::prove(
                             api_scheme_path,
                             api_input_path,
-                            api_gnark_inputs_path,
+                            api_proof_path,
                             api_tmp_dir_path,
                         )?;
                         Ok(output_ok)

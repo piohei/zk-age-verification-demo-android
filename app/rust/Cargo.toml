@@ -8,12 +8,13 @@ crate-type = ["cdylib", "staticlib"]
 
 [dependencies]
 flutter_rust_bridge = "=2.11.1"
-#noir-r1cs = { path="../../../spartan/ProveKit/noir-r1cs" }
-#noir-r1cs = { path="../../../spartan/memory-playing/ProveKit/noir-r1cs" }
-noir-r1cs = { git = "https://github.com/worldfnd/ProveKit", branch = "make_spartan_zk" }
+provekit-prover = { git = "https://github.com/worldfnd/ProveKit", branch = "px/verifier-server" }
+provekit-common = { git = "https://github.com/worldfnd/ProveKit", branch = "px/verifier-server" }
 memmap2 = "0.9.7"
 tempfile = "3.21.0"
-reqwest = { version = "0.12.23", default-features = false, features = ["blocking", "multipart"] }
+reqwest = { version = "0.12.23", default-features = false, features = ["blocking", "json"] }
+serde_json = "1.0.143"
+serde = { version = "1.0.219", features = ["derive"] }
 
 
 [lints.rust]

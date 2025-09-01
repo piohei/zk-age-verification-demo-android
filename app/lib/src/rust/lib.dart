@@ -6,14 +6,8 @@
 import 'frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-Future<String> prove({
-  required String schemePath,
-  required String inputPath,
-  required String proofPath,
-  required String tmpDirPath,
-}) => RustLib.instance.api.crateApiProve(
-  schemePath: schemePath,
-  inputPath: inputPath,
-  proofPath: proofPath,
-  tmpDirPath: tmpDirPath,
-);
+// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<NoirProof>>
+abstract class NoirProof implements RustOpaqueInterface {}
+
+// Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner< Value>>
+abstract class Value implements RustOpaqueInterface {}

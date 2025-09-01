@@ -9,6 +9,7 @@ use crate::custom_global_alloc::CustomGlobalAllocator;
 pub mod api;
 mod frb_generated;
 mod custom_global_alloc;
+mod remote;
 
 // We can also define utility functions or other modules here if needed
 // mod utils;

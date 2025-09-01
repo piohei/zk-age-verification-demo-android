@@ -8,7 +8,7 @@ import 'dart:io';
 
 void main() async {
   // Initialize the bridge
-  final dylib = _loadDylib();
+  // final dylib = _loadDylib();
 
   await RustLib.init();
 
@@ -16,22 +16,22 @@ void main() async {
 }
 
 // Helper function to load the proper library based on platform
-DynamicLibrary _loadDylib() {
-  if (Platform.isAndroid) {
-    return DynamicLibrary.open('librust_lib_app.so');
-  } else if (Platform.isIOS) {
-    // On iOS, the library is statically linked, so we use process() instead of open()
-    return DynamicLibrary.process();
-  } else if (Platform.isMacOS) {
-    return DynamicLibrary.process();
-  } else if (Platform.isWindows) {
-    return DynamicLibrary.open('native.dll');
-  } else if (Platform.isLinux) {
-    return DynamicLibrary.open('librust_lib_app.so');
-  }
+// DynamicLibrary _loadDylib() {
+//   if (Platform.isAndroid) {
+//     return DynamicLibrary.open('librust_lib_app.so');
+//   } else if (Platform.isIOS) {
+//     // On iOS, the library is statically linked, so we use process() instead of open()
+//     return DynamicLibrary.process();
+//   } else if (Platform.isMacOS) {
+//     return DynamicLibrary.process();
+//   } else if (Platform.isWindows) {
+//     return DynamicLibrary.open('native.dll');
+//   } else if (Platform.isLinux) {
+//     return DynamicLibrary.open('librust_lib_app.so');
+//   }
   
-  throw UnsupportedError('Unsupported platform: ${Platform.operatingSystem}');
-}
+//   throw UnsupportedError('Unsupported platform: ${Platform.operatingSystem}');
+// }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -71,11 +71,11 @@ class _MyHomePageState extends State<MyHomePage> {
       final directory = await getApplicationDocumentsDirectory();
       final schemePath = await _getAssetPath('assets/noir-proof-scheme.nps');
       final inputPath = await _getAssetPath('assets/Prover.toml');
-      final gnarkInputsPath = '${directory.path}/gnark_inputs';
+      final proofPath = '${directory.path}/noir-proof.np';
       final tmpDirPath = await getApplicationCacheDirectory();
 
       // Call the Rust function
-      final result = await prove(schemePath: schemePath, inputPath: inputPath, gnarkInputsPath: gnarkInputsPath, tmpDirPath: tmpDirPath.path);
+      final result = await prove(schemePath: schemePath, inputPath: inputPath, proofPath: proofPath, tmpDirPath: tmpDirPath.path);
 
       setState(() {
         _message = result;
