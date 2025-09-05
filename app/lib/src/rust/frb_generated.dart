@@ -84,6 +84,8 @@ abstract class RustLibApi extends BaseApi {
     required String inputPath,
     required String proofPath,
     required String tmpDirPath,
+    required List<int> sod,
+    required List<int> dg1,
   });
 }
 
@@ -128,6 +130,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     required String inputPath,
     required String proofPath,
     required String tmpDirPath,
+    required List<int> sod,
+    required List<int> dg1,
   }) {
     return handler.executeNormal(
       NormalTask(
@@ -137,6 +141,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           sse_encode_String(inputPath, serializer);
           sse_encode_String(proofPath, serializer);
           sse_encode_String(tmpDirPath, serializer);
+          sse_encode_list_prim_u_8_loose(sod, serializer);
+          sse_encode_list_prim_u_8_loose(dg1, serializer);
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
@@ -149,7 +155,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeErrorData: sse_decode_AnyhowException,
         ),
         constMeta: kCrateApiProveConstMeta,
-        argValues: [schemePath, inputPath, proofPath, tmpDirPath],
+        argValues: [schemePath, inputPath, proofPath, tmpDirPath, sod, dg1],
         apiImpl: this,
       ),
     );
@@ -157,7 +163,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   TaskConstMeta get kCrateApiProveConstMeta => const TaskConstMeta(
     debugName: "prove",
-    argNames: ["schemePath", "inputPath", "proofPath", "tmpDirPath"],
+    argNames: [
+      "schemePath",
+      "inputPath",
+      "proofPath",
+      "tmpDirPath",
+      "sod",
+      "dg1",
+    ],
   );
 
   @protected
@@ -170,6 +183,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   String dco_decode_String(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw as String;
+  }
+
+  @protected
+  List<int> dco_decode_list_prim_u_8_loose(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw as List<int>;
   }
 
   @protected
@@ -202,6 +221,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var inner = sse_decode_list_prim_u_8_strict(deserializer);
     return utf8.decoder.convert(inner);
+  }
+
+  @protected
+  List<int> sse_decode_list_prim_u_8_loose(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var len_ = sse_decode_i_32(deserializer);
+    return deserializer.buffer.getUint8List(len_);
   }
 
   @protected
@@ -247,6 +273,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   void sse_encode_String(String self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_list_prim_u_8_strict(utf8.encoder.convert(self), serializer);
+  }
+
+  @protected
+  void sse_encode_list_prim_u_8_loose(
+    List<int> self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.length, serializer);
+    serializer.buffer.putUint8List(
+      self is Uint8List ? self : Uint8List.fromList(self),
+    );
   }
 
   @protected

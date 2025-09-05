@@ -11,9 +11,13 @@ Future<String> prove({
   required String inputPath,
   required String proofPath,
   required String tmpDirPath,
+  required List<int> sod,
+  required List<int> dg1,
 }) => RustLib.instance.api.crateApiProve(
   schemePath: schemePath,
   inputPath: inputPath,
   proofPath: proofPath,
   tmpDirPath: tmpDirPath,
+  sod: sod,
+  dg1: dg1,
 );
